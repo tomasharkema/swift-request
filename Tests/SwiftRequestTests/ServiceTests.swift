@@ -2,6 +2,7 @@ import SwiftSyntaxMacros
 import SwiftSyntaxMacrosTestSupport
 import XCTest
 import SwiftRequestMacros
+import SwiftRequest
 
 final class ServiceTests: XCTestCase {
     let testMacros: [String: Macro.Type] = [

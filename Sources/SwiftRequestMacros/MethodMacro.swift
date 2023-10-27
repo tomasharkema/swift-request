@@ -17,7 +17,7 @@ public class MethodMacro: PeerMacro {
             return []
         }
         
-        if let staticModifier = funcDecl.modifiers?.first(where: {
+        if let staticModifier = funcDecl.modifiers.first(where: {
             $0.name.tokenKind == TokenKind.keyword(.static)
         })?.as(DeclModifierSyntax.self) {
             context.diagnose(diagnostics.nonStaticFunction(node: funcDecl, staticModifier: staticModifier))

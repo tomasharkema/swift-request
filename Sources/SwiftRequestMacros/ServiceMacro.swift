@@ -47,7 +47,7 @@ public struct ServiceMacro: PeerMacro {
         in context: some MacroExpansionContext
     ) -> FunctionDeclSyntax? {
         // TODO: require method
-        guard let method = declaration.attributes?.first?.as(AttributeSyntax.self)?.attributeName.description else {
+        guard let method = declaration.attributes.first?.as(AttributeSyntax.self)?.attributeName.description else {
             context.diagnose(diagnostics.methodRequired(node: declaration))
             return nil
         }

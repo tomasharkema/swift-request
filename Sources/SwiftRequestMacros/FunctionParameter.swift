@@ -12,7 +12,7 @@ class FunctionParameter {
     }
     
     static func getArguments(from syntax: FunctionParameterSyntax) -> TupleExprElementListSyntax? {
-        return syntax.attributes?.first?.as(AttributeSyntax.self)?.argument?.as(TupleExprElementListSyntax.self)
+        return syntax.attributes.first?.as(AttributeSyntax.self)?.argument?.as(TupleExprElementListSyntax.self)
     }
 }
 

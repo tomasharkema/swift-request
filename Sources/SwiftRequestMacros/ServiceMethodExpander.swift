@@ -23,24 +23,22 @@ class ServiceMethodExpander {
         var newAttributes: [AttributeListSyntax.Element] = []
         
         var methodAttribute: AttributeSyntax!
-        
-        if let attributes = declaration.attributes {
-            for attributeElement in attributes {
-                guard let attribute = attributeElement.as(AttributeSyntax.self),
-                      let attributeType = attribute.attributeName.as(SimpleTypeIdentifierSyntax.self)
-                else {
+
+          for attributeElement in declaration.attributes {
+              guard let attribute = attributeElement.as(AttributeSyntax.self),
+                    let attributeType = attribute.attributeName.as(SimpleTypeIdentifierSyntax.self)
+              else {
+                continue
+              }
+
+              if methods.contains(where: { $0 == attributeType.description }) {
+                  methodAttribute = attribute
                   continue
-                }
-                
-                if methods.contains(where: { $0 == attributeType.description }) {
-                    methodAttribute = attribute
-                    continue
-                }
-                
-                newAttributes.append(attributeElement)
-                print(attribute)
-            }
-        }
+              }
+
+              newAttributes.append(attributeElement)
+              print(attribute)
+          }
         
         let newListAttributes = AttributeListSyntax(newAttributes)
         
@@ -61,7 +59,7 @@ class ServiceMethodExpander {
                 .with(\.leadingTrivia, .newlines(2))
             )
             .with(\.signature.input.parameterList, convert(declaration.signature.input.parameterList))
-            .with(\.attributes, newListAttributes.isEmpty ? nil : newListAttributes)
+            .with(\.attributes, newListAttributes)
             .with(\.body, codeBlock)
         
         return newDeclaration
@@ -69,8 +67,8 @@ class ServiceMethodExpander {
     
     private func convert(_ parameters: FunctionParameterListSyntax) -> FunctionParameterListSyntax {
         FunctionParameterListSyntax(parameters.map { parameter in
-            var newParameter = parameter.with(\.attributes, nil)
-            
+            var newParameter = parameter.with(\.attributes, [])
+
             if parameter.type.is(OptionalTypeSyntax.self) {
                 newParameter = newParameter.with(\.defaultArgument, .init(value: "nil" as ExprSyntax))
             }
@@ -229,7 +227,7 @@ class ServiceMethodExpander {
     
     private func getParameters<T: FunctionParameter>(from declaration: FunctionDeclSyntax, with attributeName: String) -> [T] {
         return declaration.signature.input.parameterList.filter { parameter in
-            parameter.attributes?.contains(where: { attribute in
+            parameter.attributes.contains(where: { attribute in
                 attribute.as(AttributeSyntax.self)?.attributeName.as(SimpleTypeIdentifierSyntax.self)?.name.text == attributeName
             }) ?? false
         }.map(T.init)
